@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+asyncpg
+psycopg2-binary
+opensearch-py
+openai
+python-dotenv
+slack_sdk
