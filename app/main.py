@@ -1,6 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import slack
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.database import get_db
 
 app = FastAPI()
 
@@ -17,4 +20,13 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    return {"message": "🚀 Hello from your RAG chatbot API!"}
+    return {"message": "FastAPI + PostgreSQL + pgvector 연결 테스트!"}
+
+# ✅ DB 연결 확인용 API
+@app.get("/ping-db")
+async def ping_db(db: AsyncSession = Depends(get_db)):
+    try:
+        result = await db.execute(text("SELECT 1"))
+        return {"db_status": result.scalar() == 1}
+    except Exception as e:
+        return {"db_status": False, "error": str(e)}

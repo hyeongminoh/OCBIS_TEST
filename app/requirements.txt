@@ -6,3 +6,5 @@ opensearch-py
 openai
 python-dotenv
 slack_sdk
+sqlalchemy
+python-dotenv
