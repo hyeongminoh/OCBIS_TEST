@@ -2,30 +2,25 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.dialects.postgresql import VECTOR
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import text
-from app.database import Base
-from app.database import get_db
+from app.core.database import Base
+from app.core.database import get_db
 from app.models.document import Document
-import openai # OpenAI API 사용
+from openai import OpenAI # OpenAI API 사용
+import os
 
 router = APIRouter()
 
-class Document(Base):
-    __tablename__ = "documents"
-
-    id = Column(Integer, primary_key=True, index=True)
-    content = Column(String)
-    embedding = Column(VECTOR(1536))  # 차원 수 맞게
-
 @router.post("/documents")
 async def add_document(content: str, db: AsyncSession = Depends(get_db)):
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     # 1️⃣ OpenAI 임베딩 생성
-    response = openai.Embedding.create(
+    response = client.embeddings.create(
         input=content,
         model="text-embedding-ada-002"
     )
-    embedding = response["data"][0]["embedding"]  # 임베딩 벡터 추출
+    embedding = response.data[0].embedding  # 임베딩 벡터 추출
 
     # 2️⃣ DB에 저장
     doc = Document(content=content, embedding=embedding)
