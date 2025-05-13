@@ -94,6 +94,11 @@
 | `api_server.py` | FastAPI API 서버 |
 
 ---
+단계	저장 위치	저장 내용	역할
+1	PostgreSQL	content (원문 텍스트)	정형 데이터 보존
+2	OpenSearch	id + embedding vector	빠른 벡터 유사도 검색
+3	검색 시	→ OpenSearch → Postgre	검색 결과 원문 조회
+
 
 # ✅ 현재까지 저장된 상태
 - 핵심 목표/구조/기술 선택/모듈까지 정리 완료
