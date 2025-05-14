@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import slack
 from app.routers import document
+from app.routers import search_opensearch
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
@@ -10,6 +11,7 @@ app = FastAPI()
 
 app.include_router(slack.router)
 app.include_router(document.router)
+app.include_router(search_opensearch.router)
 
 # CORS 설정 (테스트용 전체 허용)
 app.add_middleware(
