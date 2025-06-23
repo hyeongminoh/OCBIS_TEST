@@ -1,19 +1,35 @@
-
-version: '3.8'
-
+version: "3.8"
 services:
   postgres:
-    image: ankane/pgvector
-    container_name: rag_pgvector
+    image: postgres:15
+    container_name: slackbot_postgres
     environment:
-      POSTGRES_USER: rag_user
-      POSTGRES_PASSWORD: rag_password
-      POSTGRES_DB: rag_db
+      POSTGRES_USER: slackuser
+      POSTGRES_PASSWORD: slackpass
+      POSTGRES_DB: slackdb
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-    restart: always
+
+  opensearch:
+    image: opensearchproject/opensearch:2.11.1
+    container_name: slackbot_opensearch
+    environment:
+      - discovery.type=single-node
+      - plugins.security.disabled=true  # 인증 없이 OpenSearch 접근 가능
+      - bootstrap.memory_lock=true
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"  # OpenSearch API
+      - "9600:9600"  # Performance Analyzer
+    volumes:
+      - osdata:/usr/share/opensearch/data
 
 volumes:
   pgdata:
+  osdata:
